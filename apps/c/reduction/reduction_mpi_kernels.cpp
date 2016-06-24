@@ -8,7 +8,6 @@
 
 // global constants
 
-
 // user kernel files
 
 #include "res_calc_kernel.cpp"

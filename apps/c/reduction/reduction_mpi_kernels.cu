@@ -6,19 +6,19 @@
 
 #include "op_lib_cpp.h"
 
-#include "op_cuda_rt_support.h"
 #include "op_cuda_reduction.h"
+#include "op_cuda_rt_support.h"
 // global constants
 
 #ifndef MAX_CONST_SIZE
 #define MAX_CONST_SIZE 128
 #endif
 
-
-void op_decl_const_char(int dim, char const *type,
-            int size, char *dat, char const *name) {
- {
-    printf("error: unknown const name\n"); exit(1);
+void op_decl_const_char(int dim, char const *type, int size, char *dat,
+                        char const *name) {
+  {
+    printf("error: unknown const name\n");
+    exit(1);
   }
 }
 
