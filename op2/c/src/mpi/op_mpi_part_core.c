@@ -61,6 +61,7 @@
 #ifdef HAVE_PARMETIS
 #include <parmetis.h>
 #ifdef PARMETIS_VER_4
+typedef int idx_t;
 typedef idx_t idxtype;
 #endif
 #endif
