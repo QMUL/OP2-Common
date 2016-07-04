@@ -596,7 +596,8 @@ module OP2_Fortran_Declarations
 
     end function op_import_init_c
 
-    type (c_ptr) function op_export_init_c (nprocs, proclist_ptr, cells2Nodes, sp_nodes, coords, mark) BIND(C,name='op_export_init')
+    type (c_ptr) function op_export_init_c (nprocs, proclist_ptr, cells2Nodes, &
+        sp_nodes, coords, mark) BIND(C,name='op_export_init')
       use ISO_C_BINDING
 
       import :: op_dat_core
@@ -646,7 +647,8 @@ module OP2_Fortran_Declarations
 
     end subroutine op_inc_theta_c
 
-    subroutine op_theta_init_c (exp_handle, bc_id, dtheta_exp, dtheta_imp, alpha) BIND(C,name='op_theta_init')
+    subroutine op_theta_init_c (exp_handle, bc_id, dtheta_exp, &
+        dtheta_imp, alpha) BIND(C,name='op_theta_init')
       use ISO_C_BINDING
 
       import :: op_export_core
@@ -859,9 +861,11 @@ contains
     character(kind=c_char,len=*), optional :: opName
 
     if ( present ( opname ) ) then
-      map%mapCPtr = op_decl_map_c ( from%setCPtr, to%setCPtr, mapdim, c_loc ( dat ), opname//C_NULL_CHAR )
+      map%mapCPtr = op_decl_map_c ( from%setCPtr, to%setCPtr, &
+        mapdim, c_loc ( dat ), opname//C_NULL_CHAR )
     else
-      map%mapCPtr = op_decl_map_c ( from%setCPtr, to%setCPtr, mapdim, c_loc ( dat ), C_CHAR_'NONAME'//C_NULL_CHAR )
+      map%mapCPtr = op_decl_map_c ( from%setCPtr, to%setCPtr, &
+        mapdim, c_loc ( dat ), C_CHAR_'NONAME'//C_NULL_CHAR )
     end if
 
     ! convert the generated C pointer to Fortran pointer and store it inside the op_map variable
@@ -930,9 +934,11 @@ contains
     character(kind=c_char,len=*) :: type
 
     if ( present ( opname ) ) then
-      data%dataCPtr = op_decl_dat_c ( set%setCPtr, datdim, type//C_NULL_CHAR, 4, c_loc ( dat ), opName//C_NULL_CHAR )
+      data%dataCPtr = op_decl_dat_c ( set%setCPtr, datdim, &
+        type//C_NULL_CHAR, 4, c_loc ( dat ), opName//C_NULL_CHAR )
     else
-      data%dataCPtr = op_decl_dat_c ( set%setCPtr, datdim, type//C_NULL_CHAR, 4, c_loc ( dat ), C_CHAR_'NONAME'//C_NULL_CHAR )
+      data%dataCPtr = op_decl_dat_c ( set%setCPtr, datdim, &
+        type//C_NULL_CHAR, 4, c_loc ( dat ), C_CHAR_'NONAME'//C_NULL_CHAR )
     end if
 
     ! convert the generated C pointer to Fortran pointer and store it inside the op_map variable
@@ -1111,7 +1117,8 @@ contains
 !#endif
 !      op_arg_dat_python = op_arg_dat_null_c (C_NULL_PTR, idx-1, C_NULL_PTR, -1, C_NULL_PTR, access-1)
       print *, "Error, NULL pointer for op_dat"
-      op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx, C_NULL_PTR,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
+      op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx, C_NULL_PTR, &
+        dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
     else
       if (dat%dataPtr%dim .ne. dim) then
         print *, "Wrong dim",dim,dat%dataPtr%dim
@@ -1120,10 +1127,12 @@ contains
       ! warning: access and idx are in FORTRAN style, while the C style is required here
       if ( map%mapPtr%dim .eq. 0 ) then
         ! OP_ID case (does not decrement idx)
-        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx, C_NULL_PTR,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
+        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx, C_NULL_PTR, &
+          dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
 !        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx, C_NULL_PTR,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
       else
-        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx-1, map%mapCPtr,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
+        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx-1, map%mapCPtr, &
+          dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
 !        op_arg_dat_python = op_arg_dat_c ( dat%dataCPtr, idx-1, map%mapCPtr,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
       endif
     endif
@@ -1155,16 +1164,20 @@ contains
     if (opt) then
       if ( map%mapPtr%dim .eq. 0 ) then
         ! OP_ID case (does not decrement idx)
-        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, dat%dataCPtr, idx, C_NULL_PTR,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
+        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, dat%dataCPtr, idx, &
+          C_NULL_PTR,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
       else
-        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, dat%dataCPtr, idx-1, map%mapCPtr,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
+        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, dat%dataCPtr, idx-1, &
+          map%mapCPtr,  dat%dataPtr%dim, type//C_NULL_CHAR, access-1 )
       endif
     else
       if ( map%mapPtr%dim .eq. 0 ) then
         ! OP_ID case (does not decrement idx)
-        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, C_NULL_PTR, idx, C_NULL_PTR,  dim, type//C_NULL_CHAR, access-1 )
+        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, C_NULL_PTR, idx, &
+          C_NULL_PTR,  dim, type//C_NULL_CHAR, access-1 )
       else
-        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, C_NULL_PTR, idx-1, map%mapCPtr,  dim, type//C_NULL_CHAR, access-1 )
+        op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, C_NULL_PTR, idx-1, &
+          map%mapCPtr,  dim, type//C_NULL_CHAR, access-1 )
       endif
 !      op_opt_arg_dat_python = op_opt_arg_dat_c ( opt_int, C_NULL_PTR, idx, C_NULL_PTR,  dim, C_NULL_PTR, access-1 )
     endif
@@ -1195,7 +1208,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_r8_scalar = op_arg_gbl_c ( c_loc (dat), dim, C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
+    op_arg_gbl_python_r8_scalar = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
     !op_arg_gbl_python_r8_scalar = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_r8_scalar
@@ -1212,7 +1226,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_i4_scalar = op_arg_gbl_c ( c_loc (dat), dim, C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
+    op_arg_gbl_python_i4_scalar = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
     !op_arg_gbl_python_i4_scalar = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_i4_scalar
@@ -1229,7 +1244,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_logical_scalar = op_arg_gbl_c ( c_loc (dat), dim, C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
+    op_arg_gbl_python_logical_scalar = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
     !op_arg_gbl_python_logical_scalar = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_logical_scalar
@@ -1246,7 +1262,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_r8_1dim = op_arg_gbl_c ( c_loc (dat), dim, C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
+    op_arg_gbl_python_r8_1dim = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
     !op_arg_gbl_python_r8_1dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_r8_1dim
@@ -1263,7 +1280,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_i4_1dim = op_arg_gbl_c ( c_loc (dat), dim, C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
+    op_arg_gbl_python_i4_1dim = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
     !op_arg_gbl_python_i4_1dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_i4_1dim
@@ -1280,7 +1298,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_logical_1dim = op_arg_gbl_c ( c_loc (dat(1)), dim, C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
+    op_arg_gbl_python_logical_1dim = op_arg_gbl_c ( c_loc (dat(1)), dim, &
+      C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
     !op_arg_gbl_python_logical_1dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_logical_1dim
@@ -1308,7 +1327,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_r8_2dim = op_arg_gbl_c ( c_loc (real_ptr(dat)), dim, C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
+    op_arg_gbl_python_r8_2dim = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
     !op_arg_gbl_python_r8_2dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_r8_2dim
@@ -1336,7 +1356,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_r8_3dim = op_arg_gbl_c ( c_loc (dat(1,1,1)), dim, C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
+    op_arg_gbl_python_r8_3dim = op_arg_gbl_c ( c_loc (dat(1,1,1)), dim, &
+      C_CHAR_'double'//C_NULL_CHAR, 8, access-1 )
     !op_arg_gbl_python_r8_3dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_r8_3dim
@@ -1364,7 +1385,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_i4_2dim = op_arg_gbl_c ( c_loc (int_ptr(dat)), dim, C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
+    op_arg_gbl_python_i4_2dim = op_arg_gbl_c ( c_loc (dat), dim, &
+      C_CHAR_'int'//C_NULL_CHAR, 4, access-1 )
     !op_arg_gbl_python_i4_2dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_i4_2dim
@@ -1381,7 +1403,8 @@ contains
     character(kind=c_char,len=*) :: type
 
     ! warning: access is in FORTRAN style, while the C style is required here
-    op_arg_gbl_python_logical_2dim = op_arg_gbl_c ( c_loc (dat(1, 1)), dim, C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
+    op_arg_gbl_python_logical_2dim = op_arg_gbl_c ( c_loc (dat(1, 1)), dim, &
+      C_CHAR_'bool'//C_NULL_CHAR, 1, access-1 )
     !op_arg_gbl_python_logical_2dim = op_arg_gbl_c ( dat%dataCPtr, dat%dataPtr%dim, dat%dataPtr%type, access-1 )
 
   end function op_arg_gbl_python_logical_2dim
@@ -1632,7 +1655,8 @@ contains
     type(op_dat)                  :: mark
     type(op_export_handle)        :: handle
 
-    handle%exportCptr = op_export_init_c ( nprocs, c_loc(proclist_ptr), cells2Nodes%mapPtr, sp_nodes%setPtr, coords%dataPtr, mark%dataPtr)
+    handle%exportCptr = op_export_init_c ( nprocs, c_loc(proclist_ptr), &
+      cells2Nodes%mapPtr, sp_nodes%setPtr, coords%dataPtr, mark%dataPtr)
 
     call c_f_pointer ( handle%exportCPtr, handle%exportPtr )
 
@@ -1701,7 +1725,8 @@ contains
 
     ! local variables
 
-    call op_theta_init_c ( handle%exportPtr, c_loc(bc_id), c_loc(dtheta_exp), c_loc(dtheta_imp), c_loc(alpha) )
+    call op_theta_init_c ( handle%exportPtr, c_loc(bc_id), c_loc(dtheta_exp), &
+      c_loc(dtheta_imp), c_loc(alpha) )
 
   end subroutine op_theta_init
 
